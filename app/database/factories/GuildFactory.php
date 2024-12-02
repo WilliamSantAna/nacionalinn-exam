@@ -18,7 +18,8 @@ class GuildFactory extends Factory
     {
         return [
             'name' => $this->faker->word,
-            'campaign_id' => null,
+            'player_id' => null,
+            'xp' => null
         ];
     }
 }
