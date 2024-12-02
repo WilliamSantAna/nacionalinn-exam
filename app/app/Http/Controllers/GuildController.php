@@ -16,7 +16,7 @@ class GuildController extends Controller
 
     public function distribute(Request $request)
     {
-        $guildSize = $request->input('guild_size', env('GUILD_SIZE')); // Padrão: 5 jogadores por guilda
+        $guildSize = $request->input('guild_size', env('GUILD_SIZE')); // Padrão: 4 jogadores por guilda
         $guilds = $this->guildService->distributePlayers($guildSize);
 
         return response()->json([

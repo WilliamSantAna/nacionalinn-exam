@@ -5,16 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Character extends Model
+class GuildCharacter extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'archetype', 'guild_id', 'name', 'xp', 'hp', 'mp', 'at', 'df', 'qa', 'in'
+        'guild_id', 
+        'character_id',
+        'hpa', // pontos de vida atual
+        'mpa', // pontos de magia atual
     ];
 
     public function guild()
     {
         return $this->belongsTo(Guild::class);
+    }
+
+    public function character()
+    {
+        return $this->belongsTo(Character::class);
     }
 }

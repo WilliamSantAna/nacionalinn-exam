@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('characters', function (Blueprint $table) {
+        Schema::create('guild_character', function (Blueprint $table) {
             $table->id();
-            $table->enum('archetype', ['Warrior', 'Mage', 'Archer', 'Cleric']);  // Tipo de personagem
-            $table->integer('xp')->unsigned()->default(1);  // XP com valor padrão 1
             $table->unsignedBigInteger('guild_id');
+            $table->unsignedBigInteger('character_id');
             $table->timestamps();
-    
+
             $table->foreign('guild_id')->references('id')->on('guilds')->onDelete('cascade');
+            $table->foreign('character_id')->references('id')->on('characters')->onDelete('cascade');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('characters');
+        Schema::dropIfExists('guild_characters');
     }
 };

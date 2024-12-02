@@ -17,8 +17,8 @@ class GuildFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->word,  // Nome fictício para a guilda
-            'campaign_id' => null,  // Será associado posteriormente a uma Campaign existente
+            'name' => $this->faker->word,
+            'campaign_id' => null,
         ];
     }
 }
