@@ -9,15 +9,15 @@ class Guild extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['campaign_id', 'name'];
+    protected $fillable = ['name', 'player_id'];
+
+    public function guildCharacters()
+    {
+        return $this->hasMany(GuildCharacter::class);
+    }
 
     public function characters()
     {
-        return $this->hasMany(Character::class);
-    }
-
-    public function campaign()
-    {
-        return $this->belongsTo(Campaign::class);
+        return $this->hasManyThrough(Character::class, GuildCharacter::class);
     }
 }
