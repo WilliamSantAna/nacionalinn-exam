@@ -9,7 +9,7 @@ class Guild extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'player_id'];
+    protected $fillable = ['name', 'player_id', 'xp'];
 
     public function guildCharacters()
     {
