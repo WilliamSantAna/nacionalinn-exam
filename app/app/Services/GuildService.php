@@ -1,27 +1,21 @@
 <?php
 namespace App\Services;
 
-use App\Models\{Character, Guild, GuildCharacter, Player};
+use App\Models\{Character, Guild, GuildCharacter, Player, Campaign};
 use Illuminate\Database\Eloquent\Collection;
 
 class GuildService
 {
     private Collection $characters;
 
-    public function distributeCharacters()
+    public function distributeCharacters(Campaign $campaign)
     {
         $guildsDistribution = [];
         $this->characters = Character::orderBy('xp', 'desc')->get(); // Carregar os personagens ordenados por XP
-        $players = Player::all(); // Carregar todos os players
-
+        $players = $campaign->players; // Carregar todos os players da campaign
+        
         foreach ($players as $player) {
             $guild = $this->createGuildForPlayer($player); // Criar a guilda para o player
-            if (!$guild) {
-                return response()->json([
-                    'message' => 'Não foi possível criar uma formação de guilda completa com os requisitos.',
-                    'suggestion' => 'Tente uma formação com menos restrições ou mais personagens.'
-                ], 400);
-            }
             $guildsDistribution[] = $guild;
         }
 
@@ -33,6 +27,8 @@ class GuildService
      */
     private function createGuildForPlayer(Player $player): mixed
     {
+        $guild = $this->startGuild($player);
+
         $guildCharacters = [];
 
         // Filtrando os personagens por classe
@@ -50,24 +46,17 @@ class GuildService
         // Seleciona o primeiro Clérigo, Guerreiro, e pelo menos um Mago ou Arqueiro
         $guildCharacters[] = $clerics->first();
         $guildCharacters[] = $warriors->first();
-        if (!$mages->isEmpty()) {
-            $guildCharacters[] = $mages->first();
-        } else {
-            $guildCharacters[] = $archers->first();
-        }
+        $guildCharacters[] = !$mages->isEmpty() ? $mages->shift() : $archers->shift();
 
         // Verifica se a guilda tem mais de 4 personagens. Se passar de 4 personagens, a guilda não é válida
         if (count($guildCharacters) > 4) {
             return null;
         }
 
-        // Calcula o XP total da guilda
-        $guildXp = $this->getGuildXP($guildCharacters);
-
         // Salva a guilda e os personagens associados
-        $guild = $this->saveGuild($player, $guildCharacters, $guildXp);
+        $guild = $this->saveGuild($guild, $guildCharacters);
 
-        return ['guild' => $guild, 'characters' => $guildCharacters];
+        return ['guild' => $guild, 'player' => $player, 'characters' => $guildCharacters];
     }
 
     /**
@@ -79,15 +68,31 @@ class GuildService
     }
 
     /**
+     * Vamos recriar uma guild do zero
+     */
+    private function startGuild(Player $player)
+    {
+        if ($player->guild != null) {
+            $player->guild->delete();
+        }
+
+        $guild = Guild::create([
+            'player_id' => $player->id,
+            'name' => $player->name . "'s Guild", 
+            'xp' => 0
+        ]);
+
+        return $guild;
+    }
+
+    /**
      * Método para salvar a guilda e seus personagens associados
      */
-    private function saveGuild(Player $player, array $guildCharacters, int $guildXp): Guild
+    private function saveGuild(Guild $guild, array $guildCharacters): Guild
     {
-        $guild = Guild::create([
-            'name' => $player->name . "'s Guild",
-            'player_id' => $player->id,
-            'xp' => $guildXp,
-        ]);
+
+        $guild->xp = $this->getGuildXP($guildCharacters);
+        $guild->save();
 
         // Salvar os personagens na tabela guild_character
         foreach ($guildCharacters as $character) {

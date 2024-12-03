@@ -11,7 +11,7 @@ use App\Http\Controllers\{
 
 Route::get('/', fn() => view('welcome'));
 
-Route::get('/distribute-guilds', [GuildController::class, 'distribute']);
+Route::get('/distribute-guilds/{campaign_id}', [GuildController::class, 'distribute']);
 
 Route::post('/campaigns', [CampaignController::class, 'store']);
 Route::get('/campaigns', [CampaignController::class, 'index']);
