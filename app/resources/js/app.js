@@ -89,7 +89,7 @@ const submitPlayerOnClick = () => {
     .then(response => response.json())
     .then(data => {
         if (data.message) {
-            //loadModal(`/players/new/${data.player.id}`, 'modal-xl');
+            loadPlayers(data.player.campaign_id);
         }
     })
     .catch(error => console.error('Error:', error));
