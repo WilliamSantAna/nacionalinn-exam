@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\GuildService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Campaign;
 
 class GuildController extends Controller
 {
@@ -15,9 +16,10 @@ class GuildController extends Controller
         $this->guildService = $guildService;
     }
 
-    public function distribute(Request $request)
+    public function distribute($campaignId)
     {
-        $guilds = $this->guildService->distributeCharacters();
+        $campaign = Campaign::find($campaignId);
+        $guilds = $this->guildService->distributeCharacters($campaign);
 
         return response()->json(['message' => 'Guilds created successfully!', 'guilds' => $guilds]);
     }
