@@ -145,4 +145,19 @@ class PlayerController extends Controller
             'message' => 'Player deleted successfully.'
         ], 200);
     }
+
+    public function toggleConfirmation($id)
+    {
+        $player = Player::find($id);
+
+        if (!$player) {
+            return response()->json(['message' => 'Player not found.'], 404);
+        }
+
+        // Alterna o status de confirmação
+        $player->confirmed = !$player->confirmed;
+        $player->save();
+
+        return response()->json(['message' => 'Player confirmation updated.', 'confirmed' => $player->confirmed], 200);
+    }    
 }

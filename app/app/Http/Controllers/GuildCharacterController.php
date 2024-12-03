@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{GuildCharacter, Player};
+use App\Models\{GuildCharacter, Player, Guild};
 use Illuminate\Http\Request;
 
 class GuildCharacterController extends Controller
@@ -125,7 +125,7 @@ class GuildCharacterController extends Controller
 
     public function getCharactersByPlayer($player_id)
     {
-        $guild = \App\Models\Guild::where('player_id', $player_id)->first();
+        $guild = Guild::where('player_id', $player_id)->first();
     
         if (!$guild) {
             return response()->json([
@@ -143,7 +143,7 @@ class GuildCharacterController extends Controller
     
     public function viewCharactersByPlayer($player_id)
     {
-        $guild = \App\Models\Guild::where('player_id', $player_id)->first();
+        $guild = Guild::where('player_id', $player_id)->first();
     
         if (!$guild) {
             return response()->json([
@@ -159,5 +159,35 @@ class GuildCharacterController extends Controller
             'characters' => $characters
         ]);
     }
+
+    public function addCharacter($guild_id, $character_id)
+    {
+        GuildCharacter::create([
+            'guild_id' => $guild_id, 
+            'character_id' => $character_id,
+        ]);
+
+        Guild::find($guild_id)->updateXp();
+
+        return response()->json(['message' => 'Character added successfully.'], 200);
+    }
+    
+
+    public function removeCharacter($guild_id, $character_id)
+    {
+        $guildCharacter = \App\Models\GuildCharacter::where('guild_id', $guild_id)
+            ->where('character_id', $character_id)
+            ->first();
+    
+        if ($guildCharacter) {
+            $guildCharacter->delete();
+            Guild::find($guild_id)->updateXp();
+
+            return response()->json(['message' => 'Character removed successfully.'], 200);
+        }
+    
+        return response()->json(['message' => 'Character not found in the guild.'], 404);
+    }
+    
         
 }

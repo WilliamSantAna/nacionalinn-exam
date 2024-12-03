@@ -18,16 +18,18 @@ class Guild extends Model
 
     public function characters()
     {
-        return $this->belongsToMany(
-            Character::class,
-            'guild_characters',
-            'guild_id',
-            'character_id'
-        );
+        return $this->belongsToMany(Character::class, 'guild_characters', 'guild_id', 'character_id');
     }
 
     public function player()
     {
         return $this->belongsTo(Player::class);
     }
+
+    public function updateXp()
+    {
+        $totalXp = $this->characters()->sum('xp');
+        $this->xp = $totalXp;
+        $this->save();
+    }    
 }
