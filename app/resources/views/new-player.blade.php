@@ -67,7 +67,7 @@
     </div>
 
     <div class="players-footer">
-        <input type="button" class="btn btn-sm btn-medieval" value="Redistribute">
+        <input type="button" class="btn btn-sm btn-medieval" value="Balance Teams">
         <input type="button" class="btn btn-start-game" value="Start Game">
     </div>
 

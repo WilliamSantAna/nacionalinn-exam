@@ -279,31 +279,37 @@ input.form-control {
     align-content: center;
 }
 
-
+.player-container .left-content .players-list {
+    max-height: 250px;
+}
 
 /* Estilizando a barra de rolagem */
 .player-container .right-content .guild,
-.player-container .right-content .characters {
+.player-container .right-content .characters,
+.player-container .left-content .players-list {
     overflow-y: auto;
 }
 
 /* Barra de rolagem */
 .player-container .right-content .guild::-webkit-scrollbar,
-.player-container .right-content .characters::-webkit-scrollbar {
+.player-container .right-content .characters::-webkit-scrollbar,
+.player-container .left-content .players-list::-webkit-scrollbar {
     width: 12px; /* Largura da barra de rolagem */
     background-color: rgba(0, 0, 0, 0.1); /* Cor de fundo da barra */
 }
 
 /* Estilo do "trilho" da barra de rolagem (parte que a barra desliza) */
 .player-container .right-content .guild::-webkit-scrollbar-track,
-.player-container .right-content .characters::-webkit-scrollbar-track {
+.player-container .right-content .characters::-webkit-scrollbar-track,
+.player-container .left-content .players-list::-webkit-scrollbar-track {
     background-color: rgba(0, 0, 0, 0.15); /* Cor do trilho da barra */
     border-radius: 6px; /* Bordas arredondadas */
 }
 
 /* Estilo da "thumb" da barra de rolagem (parte que se move) */
 .player-container .right-content .guild::-webkit-scrollbar-thumb,
-.player-container .right-content .characters::-webkit-scrollbar-thumb {
+.player-container .right-content .characters::-webkit-scrollbar-thumb,
+.player-container .left-content .players-list::-webkit-scrollbar-thumb {
     background: linear-gradient(135deg, #7b2e8e, #4b002d); /* Gradiente combinando com o tema medieval */
     border-radius: 6px; /* Bordas arredondadas */
     border: 2px solid #4b002d; /* Borda fina ao redor da "thumb" */
@@ -312,18 +318,21 @@ input.form-control {
 
 /* Efeito de hover na "thumb" */
 .player-container .right-content .guild::-webkit-scrollbar-thumb:hover,
-.player-container .right-content .characters::-webkit-scrollbar-thumb:hover {
+.player-container .right-content .characters::-webkit-scrollbar-thumb:hover,
+.player-container .left-content .players-list::-webkit-scrollbar-thumb:hover {
     background: linear-gradient(135deg, #9b5fb2, #6d1b4f); /* Gradiente mais suave no hover */
 }
 
 /* Efeito de foco na "thumb" */
 .player-container .right-content .guild::-webkit-scrollbar-thumb:focus,
-.player-container .right-content .characters::-webkit-scrollbar-thumb:focus {
+.player-container .right-content .characters::-webkit-scrollbar-thumb:focus,
+.player-container .left-content .players-list::-webkit-scrollbar-thumb:focus {
     background-color: #f0e6d2; /* Cor dourada para foco */
 }
 
 /* Estilo da parte inferior da barra de rolagem (opcional) */
 .player-container .right-content .guild::-webkit-scrollbar-corner,
-.player-container .right-content .characters::-webkit-scrollbar-corner {
+.player-container .right-content .characters::-webkit-scrollbar-corner,
+.player-container .left-content .players-list::-webkit-scrollbar-corner {
     background-color: rgba(0, 0, 0, 0.15);
 }
