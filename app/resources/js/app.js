@@ -28,20 +28,21 @@ const loadModal = (url, title, size, callback) => {
 window.loadModal = loadModal;
 
 
-const loadPlayers = (campaignId) => {
+const loadPlayers = (campaignId, callback) => {
     fetch(`/campaign/${campaignId}/players`)
     .then(response => response.text())
     .then(html => {
         document.querySelector('.players-campaign').innerHTML = html;
+        try { callback(); } catch (e) {}
     })
     .catch(error => console.error('Error:', error));
     
 };
 window.loadPlayers = loadPlayers;
 
-const newCampaignLinkOnClick = () => loadModal('/campaign/new', 'New Campaign', 'modal-md');
+const newCampaignLinkOnClick = (event) => loadModal('/campaign/new', 'New Campaign', 'modal-md');
 
-const submitCampaignOnClick = () => {
+const submitCampaignOnClick = (event) => {
     const form = document.getElementById('createCampaignForm');
     const formData = new FormData(form);
 
@@ -69,7 +70,7 @@ const submitCampaignOnClick = () => {
     .catch(error => console.error('Error:', error));
 };
 
-const submitPlayerOnClick = () => {
+const submitPlayerOnClick = (event) => {
     const form = document.getElementById('createPlayerForm');
     const formData = new FormData(form);
 
@@ -95,8 +96,8 @@ const submitPlayerOnClick = () => {
     .catch(error => console.error('Error:', error));
 };
 
-const clickPlayer = (elem) => {
-    const playerId = elem.getAttribute('data-player-id');
+const clickPlayer = (event) => {
+    const playerId = event.target.getAttribute('data-player-id');
     fetch(`/guild-characters/player/${playerId}`)
         .then(response => response.text())
         .then(html => {
@@ -105,17 +106,39 @@ const clickPlayer = (elem) => {
         .catch(error => console.error('Error:', error));
 };
 
+const balanceTeams = (event) => {
+    const campaignId = event.target.getAttribute('data-campaign-id');
+    fetch(`/distribute-guilds/${campaignId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+            }
+            if (data.guilds) {
+                console.log('Guilds distribuídas:', data.guilds);
+                const player = data.guilds[0].player;
+                loadPlayers(player.campaign_id, () => {
+                    document.querySelector(`.view-guild[data-player-id="${player.id}"]`).click();                    
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao distribuir guilds:', error);
+        });
+};
+
 
 const delegateClickEvents = (event) => {
     if (event.target) {
         switch (event.target.id) { 
-            case 'submitCampaign': return submitCampaignOnClick();
-            case 'newCampaignLink': return newCampaignLinkOnClick();
-            case 'submitPlayer': return submitPlayerOnClick();
+            case 'submitCampaign': return submitCampaignOnClick(event);
+            case 'newCampaignLink': return newCampaignLinkOnClick(event);
+            case 'submitPlayer': return submitPlayerOnClick(event);
+            case 'balance_teams': return balanceTeams(event);
         }
 
         if (event.target.classList.contains('view-guild')) {
-            return clickPlayer(event.target);
+            return clickPlayer(event);
         }
     }
 };

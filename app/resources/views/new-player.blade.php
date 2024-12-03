@@ -67,8 +67,8 @@
     </div>
 
     <div class="players-footer">
-        <input type="button" class="btn btn-sm btn-medieval" value="Balance Teams">
-        <input type="button" class="btn btn-start-game" value="Start Game">
+        <input type="button" class="btn btn-sm btn-medieval" id="balance_teams" value="Balance Teams" data-campaign-id="{{ $campaign->id }}">
+        <input type="button" class="btn btn-start-game" id="start_game" value="Start Game" data-campaign-id="{{ $campaign->id }}">
     </div>
 
 
