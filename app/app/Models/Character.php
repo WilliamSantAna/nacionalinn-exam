@@ -10,11 +10,6 @@ class Character extends Model
     use HasFactory;
 
     protected $fillable = [
-        'archetype', 'guild_id', 'name', 'xp', 'hp', 'mp', 'at', 'df', 'qa', 'in'
+        'archetype', 'name', 'xp', 'hp', 'mp', 'at', 'df', 'qa', 'in'
     ];
-
-    public function guild()
-    {
-        return $this->belongsTo(Guild::class);
-    }
 }

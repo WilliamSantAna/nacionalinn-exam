@@ -4,9 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Campaign;
+use Illuminate\Support\Carbon;
 
 class CampaignController extends Controller
 {
+    /**
+     * Retorna a view de criação de campanha
+     */
+    public function new()
+    {
+        return view('new-campaign');
+    }
+
     /**
      * Método para buscar todas as campanhas.
      */
@@ -45,15 +54,12 @@ class CampaignController extends Controller
         // Valida os dados da requisição
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'start_date' => 'required|date',
-            'end_date' => 'date|after_or_equal:start_date',
         ]);
 
         // Cria a campanha no banco de dados
         $campaign = Campaign::create([
             'name' => $validated['name'],
-            'start_date' => $validated['start_date'],
-            'end_date' => $validated['end_date'],
+            'start_date' => Carbon::now()
         ]);
 
         return response()->json([
@@ -92,4 +98,23 @@ class CampaignController extends Controller
             'campaign' => $campaign
         ], 200);
     }    
+
+    public function viewPlayersOfCampaign($campaign_id)
+    {
+        $campaign = Campaign::find($campaign_id);
+    
+        if (!$campaign) {
+            return response()->json([
+                'message' => 'Campaign not found for the specified id.'
+            ], 404);
+        }
+    
+        $players = $campaign->players;
+    
+        return view('players-campaign', [
+            'campaign' => $campaign,
+            'players' => $players
+        ]);
+    }
+
 }
