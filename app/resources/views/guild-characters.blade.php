@@ -1,5 +1,5 @@
 <div class="mb-3">
-    <strong>{{ $player->name }}'s Guild</strong>
+    <strong>{{ $player->guild->name }}</strong>
 </div>
 
 @foreach ($characters as $character)

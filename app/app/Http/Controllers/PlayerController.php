@@ -81,9 +81,16 @@ class PlayerController extends Controller
             'confirmed' => false,
         ]);
 
+        $guild = Guild::create([
+            'name' => $player->name . "'s Guild",
+            'player_id' => $player->id, 
+            'xp' => 0
+        ]);
+
         return response()->json([
             'message' => 'Player created successfully.',
-            'player' => $player
+            'player' => $player,
+            'guild' => $guild,
         ], 201);
     }
 
