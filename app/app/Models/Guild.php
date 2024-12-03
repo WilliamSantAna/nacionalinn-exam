@@ -18,6 +18,16 @@ class Guild extends Model
 
     public function characters()
     {
-        return $this->hasManyThrough(Character::class, GuildCharacter::class);
+        return $this->belongsToMany(
+            Character::class,
+            'guild_characters',
+            'guild_id',
+            'character_id'
+        );
+    }
+
+    public function player()
+    {
+        return $this->belongsTo(Player::class);
     }
 }
