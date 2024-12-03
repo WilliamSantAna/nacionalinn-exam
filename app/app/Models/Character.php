@@ -16,5 +16,10 @@ class Character extends Model
     public function guildCharacters()
     {
         return $this->hasMany(GuildCharacter::class);
+    }
+
+    public function guilds()
+    {
+        return $this->belongsToMany(Guild::class, 'guild_characters', 'character_id', 'guild_id');
     }    
 }

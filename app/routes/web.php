@@ -33,6 +33,7 @@ Route::delete('/players/{id}', [PlayerController::class, 'destroy']);
 Route::get('/players', [PlayerController::class, 'index']);
 Route::get('/players/{id}', [PlayerController::class, 'show']);
 Route::get('/players/new/{campaign_id}', [PlayerController::class, 'new'])->name('player.new');
+Route::patch('/players/{id}/confirm', [PlayerController::class, 'toggleConfirmation']);
 
 Route::post('/guild-characters', [GuildCharacterController::class, 'store']);
 Route::put('/guild-characters/{id}', [GuildCharacterController::class, 'update']);
@@ -41,6 +42,8 @@ Route::get('/guild-characters', [GuildCharacterController::class, 'index']);
 Route::get('/guild-characters/{id}', [GuildCharacterController::class, 'show']);
 Route::get('/guild-characters/guild/{guild_id}', [GuildCharacterController::class, 'getByGuild']);
 Route::get('/guild-characters/player/{player_id}', [GuildCharacterController::class, 'viewCharactersByPlayer']);
+Route::delete('/guild-characters/{guild_id}/remove/{character_id}', [GuildCharacterController::class, 'removeCharacter']);
+Route::delete('/guild-characters/{guild_id}/add/{character_id}', [GuildCharacterController::class, 'addCharacter']);
 
 Route::post('/guilds', [GuildController::class, 'store']);
 Route::put('/guilds/{id}', [GuildController::class, 'update']);

@@ -3,7 +3,7 @@
 </div>
 
 @foreach ($characters as $character)
-    <li class="list-group-item">
+    <li class="list-group-item view-character" data-character-id="{{ $character->id }}">
         <img src="img/characters/{{ strtolower($character->archetype) }}-{{ strtolower($character->name) }}.jpeg" />
         
         <div class="description">
