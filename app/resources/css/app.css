@@ -1,3 +1,329 @@
+@import 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css';
+@import 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Uncial+Antiqua&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap';
+@import 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'Cinzel', serif;
+}
+
+.bg {
+    background-image: url('/public/img/bg1.jpeg');
+    height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.overlay {
+    background-color: rgba(0, 0, 0, 0.4);
+    height: 100%;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+p {
+    font-size: 1.5rem;
+}
+
+.btn-medieval {
+    font-family: 'Uncial Antiqua', serif;
+    font-size: 1.8rem;
+    padding: 1rem 2.5rem;
+    color: #c59c06;
+    background: linear-gradient(135deg, #7b2e8e, #4b002d);
+    border: 2px solid #4b002d;
+    border-radius: 8px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-medieval:hover {
+    background: linear-gradient(135deg, #9b5fb2, #6d1b4f);
+    color: #f0e6d2;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
+    transform: scale(1.05);
+}
+
+.btn-medieval:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, #5d2357, #3a001d);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.btn-medieval.btn-sm {
+    font-size: 0.8em !important;
+}
+
+.btn-medieval.btn-xs {
+    font-size: 0.6em !important;
+    padding: 0.4rem 1.0rem;
+}
+
+.btn-start-game {
+    font-family: 'Uncial Antiqua', serif;
+    font-size: 1.8rem;
+    padding: 1rem 2.5rem;
+    color: #c4b6ca;
+    background: linear-gradient(135deg, #8e802e, #464b00);
+    border: 2px solid #797700;
+    border-radius: 8px;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+    text-transform: uppercase;
+    transition: all 0.3s ease-in-out;
+    cursor: pointer;
+}
+
+.btn-start-game:hover {
+    background: linear-gradient(135deg, #b2ac5f, #6c6d1b);
+    color: #f0e6d2;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.7);
+    transform: scale(1.05);
+}
+
+.btn-start-game:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, #8e802e, #464b00);
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+.float-right {
+    float: right;
+}
+
+.rpg-title {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    text-align: center;
+    color: #9f7d04;
+    font-size: 6rem;
+    font-family: 'Uncial Antiqua', serif;
+    font-weight: bold;
+    text-shadow: 0 0 10px rgb(1, 96, 96);
+    padding: 5rem 1rem;
+    background-color: rgba(0, 128, 255, 0.05);
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+    align-content: flex-end;
+    flex-wrap: wrap;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 330px;
+}
+
+
+#modal .modal-content {
+    background: linear-gradient(135deg, #0fa75bdc, #006bc2c0);
+    border: solid 7px #d7d7d7d2;
+    color: #fff;
+}
+
+#modal .modal-body {
+    padding: 20px;
+    background: linear-gradient(135deg, #0fa75b8a, #0064c28a);
+}
+
+#modal .btn-close {
+    color: #fff;
+}
+
+@media (min-width: 576px) {
+    .modal-dialog.modal-xl{
+        max-width: min( 90vw, 1200px ) !important;
+    }
+    .modal-dialog.modal-lg{
+        max-width: min( 90vw, 900px ) !important;
+    }
+}
+
+input.form-control {
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #fff;
+    border: solid 2px #d7d7d78f;
+}
+
+#createCampaignForm {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+#createCampaignForm input {
+    width: 100%;
+    text-align: center;
+}
+
+.player-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.player-container .left-content {
+    display: flex;
+    align-items: stretch;
+    width: 25%;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+}
+
+.player-container .right-content {
+    display: flex;
+    align-items: stretch;
+    padding-left: 20px;
+    width: 75%;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    align-content: stretch;
+}
+
+.players-list li {
+    background-color: #ffffffa4;
+}
+
+.player-item {
+    cursor: pointer;
+}
+
+.player-item:hover {
+    background-color: #ffffff8a;
+}
+
+
+.player-container .right-content .characters,
+.player-container .right-content .guild {
+    display: flex;
+    align-items: flex-start; 
+    padding-left: 20px;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-content: space-around;
+    max-height: 400px;
+    width: 45%;
+    background-color: rgba(240, 248, 255, 0.075);
+}
+
+.player-container .right-content .add-remove {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    width: 10%;
+    margin: 0 20px;
+}
+
+
+.player-container .right-content img {
+    width: 40%;
+}
+
+.player-container .right-content .list-group-item {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 5px;
+    background-color: #3a001d1e;
+}
+
+.player-container .right-content .list-group-item .description {
+    padding: 0 10px;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    flex-direction: column;
+    position: absolute;
+    background-color: rgba(0, 128, 255, 0.05);
+    text-shadow: 0 0 10px rgb(1, 96, 96);
+    font-size: 1.3em;
+    color: #ffffff;
+}
+
+.player-container .right-content .list-group-item .attributes {
+    padding-left: 10px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    align-content: space-around;
+}
+
+.players-footer {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    align-content: center;
+}
+
+
+
+/* Estilizando a barra de rolagem */
+.player-container .right-content .guild,
+.player-container .right-content .characters {
+    overflow-y: auto;
+}
+
+/* Barra de rolagem */
+.player-container .right-content .guild::-webkit-scrollbar,
+.player-container .right-content .characters::-webkit-scrollbar {
+    width: 12px; /* Largura da barra de rolagem */
+    background-color: rgba(0, 0, 0, 0.1); /* Cor de fundo da barra */
+}
+
+/* Estilo do "trilho" da barra de rolagem (parte que a barra desliza) */
+.player-container .right-content .guild::-webkit-scrollbar-track,
+.player-container .right-content .characters::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.15); /* Cor do trilho da barra */
+    border-radius: 6px; /* Bordas arredondadas */
+}
+
+/* Estilo da "thumb" da barra de rolagem (parte que se move) */
+.player-container .right-content .guild::-webkit-scrollbar-thumb,
+.player-container .right-content .characters::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #7b2e8e, #4b002d); /* Gradiente combinando com o tema medieval */
+    border-radius: 6px; /* Bordas arredondadas */
+    border: 2px solid #4b002d; /* Borda fina ao redor da "thumb" */
+    transition: background-color 0.3s ease-in-out; /* Transição suave */
+}
+
+/* Efeito de hover na "thumb" */
+.player-container .right-content .guild::-webkit-scrollbar-thumb:hover,
+.player-container .right-content .characters::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #9b5fb2, #6d1b4f); /* Gradiente mais suave no hover */
+}
+
+/* Efeito de foco na "thumb" */
+.player-container .right-content .guild::-webkit-scrollbar-thumb:focus,
+.player-container .right-content .characters::-webkit-scrollbar-thumb:focus {
+    background-color: #f0e6d2; /* Cor dourada para foco */
+}
+
+/* Estilo da parte inferior da barra de rolagem (opcional) */
+.player-container .right-content .guild::-webkit-scrollbar-corner,
+.player-container .right-content .characters::-webkit-scrollbar-corner {
+    background-color: rgba(0, 0, 0, 0.15);
+}

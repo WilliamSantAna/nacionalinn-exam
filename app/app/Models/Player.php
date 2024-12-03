@@ -9,7 +9,7 @@ class Player extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['campaign_id', 'name', 'confirmed'];
+    protected $fillable = ['name', 'campaign_id', 'confirmed'];
 
     public function campaign()
     {
