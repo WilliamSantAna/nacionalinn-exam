@@ -113,4 +113,14 @@ class CharacterController extends Controller
             'character' => $character
         ], 200);
     }
+
+    /**
+     * Busca os characters que não estão em guild_character
+     */
+    public function getAvailableCharacters()
+    {
+        $availableCharacters = Character::whereDoesntHave('guildCharacters')->get();
+
+        return response()->json($availableCharacters, 200);
+    }    
 }

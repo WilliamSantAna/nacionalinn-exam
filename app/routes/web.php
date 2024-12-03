@@ -19,6 +19,7 @@ Route::get('/campaigns/{id}', [CampaignController::class, 'show']);
 Route::put('/campaigns/{id}', [CampaignController::class, 'update']);
 Route::get('/campaign/new', [CampaignController::class, 'new'])->name('campaign.new');
 Route::get('/campaign/{id}/players', [CampaignController::class, 'viewPlayersOfCampaign']);
+Route::get('/campaign/{id}/characters-available', [CampaignController::class, 'viewCharactersAvailableOfCampaign']);
 
 Route::post('/characters', [CharacterController::class, 'store']);
 Route::put('/characters/{id}', [CharacterController::class, 'update']);
@@ -40,7 +41,6 @@ Route::get('/guild-characters', [GuildCharacterController::class, 'index']);
 Route::get('/guild-characters/{id}', [GuildCharacterController::class, 'show']);
 Route::get('/guild-characters/guild/{guild_id}', [GuildCharacterController::class, 'getByGuild']);
 Route::get('/guild-characters/player/{player_id}', [GuildCharacterController::class, 'viewCharactersByPlayer']);
-
 
 Route::post('/guilds', [GuildController::class, 'store']);
 Route::put('/guilds/{id}', [GuildController::class, 'update']);
