@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Campaign;
+use App\Models\{Guild, Campaign, Character};
 use Illuminate\Support\Carbon;
 
 class CampaignController extends Controller
@@ -115,6 +115,24 @@ class CampaignController extends Controller
             'campaign' => $campaign,
             'players' => $players
         ]);
+    }
+
+    public function viewCharactersAvailableOfCampaign($campaign_id)
+    {
+        $campaign = Campaign::find($campaign_id);
+
+        // Obtem os IDs dos players da campanha específica
+        $playerIds = $campaign->players()->pluck('id')->toArray();
+
+        // Obtem os IDs das guilds associadas aos players da campanha
+        $guildIds = Guild::whereIn('player_id', $playerIds)->pluck('id')->toArray();
+
+        // Busca os characters que não estão atrelados a essas guilds
+        $availableCharacters = Character::whereDoesntHave('guildCharacters', function ($query) use ($guildIds) {
+            $query->whereIn('guild_id', $guildIds);
+        })->get();
+
+        return view('characters', ['characters' => $availableCharacters]);        
     }
 
 }

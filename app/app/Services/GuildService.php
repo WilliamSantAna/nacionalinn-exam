@@ -3,6 +3,7 @@ namespace App\Services;
 
 use App\Models\{Character, Guild, GuildCharacter, Player, Campaign};
 use Illuminate\Database\Eloquent\Collection;
+use \Random\Randomizer as Randomizer;
 
 class GuildService
 {
@@ -43,10 +44,13 @@ class GuildService
             return null;
         }
 
-        // Seleciona o primeiro Clérigo, Guerreiro, e pelo menos um Mago ou Arqueiro
-        $guildCharacters[] = $clerics->first();
+        // Seleciona o primeiro Guerreiro, Clérigo e pelo menos um Mago ou Arqueiro
         $guildCharacters[] = $warriors->first();
-        $guildCharacters[] = !$mages->isEmpty() ? $mages->shift() : $archers->shift();
+        $guildCharacters[] = $clerics->first();
+
+        $next = ['mages', 'archers'];
+        shuffle($next);
+        $guildCharacters[] = ($next[0] == 'mages' ? $mages->shift() : $archers->shift());
 
         // Verifica se a guilda tem mais de 4 personagens. Se passar de 4 personagens, a guilda não é válida
         if (count($guildCharacters) > 4) {

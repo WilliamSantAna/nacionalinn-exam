@@ -30,15 +30,26 @@ window.loadModal = loadModal;
 
 const loadPlayers = (campaignId, callback) => {
     fetch(`/campaign/${campaignId}/players`)
-    .then(response => response.text())
-    .then(html => {
-        document.querySelector('.players-campaign').innerHTML = html;
-        try { callback(); } catch (e) {}
-    })
-    .catch(error => console.error('Error:', error));
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.players-campaign').innerHTML = html;
+            try { callback(); } catch (e) {}
+        })
+        .catch(error => console.error('Error:', error));
     
 };
 window.loadPlayers = loadPlayers;
+
+const loadCharacters = (campaignId, callback) => {
+    fetch(`/campaign/${campaignId}/characters-available`)
+        .then(response => response.text())
+        .then(html => {
+            document.querySelector('.characters').innerHTML = html;
+            try { callback(); } catch (e) {}
+        })
+        .catch(error => console.error('Error fetching characters:', error));
+};
+window.loadCharacters = loadCharacters;
 
 const newCampaignLinkOnClick = (event) => loadModal('/campaign/new', 'New Campaign', 'modal-md');
 
@@ -63,7 +74,8 @@ const submitCampaignOnClick = (event) => {
     .then(data => {
         if (data.message) {
             loadModal(`/players/new/${data.campaign.id}`, 'Welcome to Campaign ' + data.campaign.name, 'modal-xl', () => {
-                window.loadPlayers(data.campaign.id);
+                loadPlayers(data.campaign.id);
+                loadCharacters(data.campaign.id);
             });
         }
     })
@@ -91,6 +103,7 @@ const submitPlayerOnClick = (event) => {
     .then(data => {
         if (data.message) {
             loadPlayers(data.player.campaign_id);
+            loadCharacters(data.player.campaign.id);
         }
     })
     .catch(error => console.error('Error:', error));
@@ -120,6 +133,7 @@ const balanceTeams = (event) => {
                 loadPlayers(player.campaign_id, () => {
                     document.querySelector(`.view-guild[data-player-id="${player.id}"]`).click();                    
                 });
+                loadCharacters(player.campaign_id);
             }
         })
         .catch(error => {

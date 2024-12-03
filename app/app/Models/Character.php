@@ -12,4 +12,9 @@ class Character extends Model
     protected $fillable = [
         'archetype', 'name', 'xp', 'hp', 'mp', 'at', 'df', 'qa', 'in'
     ];
+
+    public function guildCharacters()
+    {
+        return $this->hasMany(GuildCharacter::class);
+    }    
 }
