@@ -21,6 +21,7 @@ class GuildController extends Controller
 
         return response()->json(['message' => 'Guilds created successfully!', 'guilds' => $guilds]);
     }
+    
     /**
      * Criar uma nova guilda.
      */
@@ -32,7 +33,14 @@ class GuildController extends Controller
             'player_id' => 'required|exists:players,id',  // A guild deve pertencer a um player
         ]);
 
-        // Criação da guilda
+        // Verifica se o player já tem uma guild
+        $existingGuild = Guild::where('player_id', $validated['player_id'])->first();
+        if ($existingGuild) {
+            return response()->json([
+                'message' => 'This player already has a guild.'
+            ], 400);
+        }
+
         $guild = Guild::create($validated);
 
         return response()->json([
