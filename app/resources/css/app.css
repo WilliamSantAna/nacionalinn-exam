@@ -223,6 +223,7 @@ input.form-control {
     flex-direction: column;
     align-content: space-around;
     max-height: 400px;
+    min-height: 400px;
     width: 45%;
     background-color: rgba(240, 248, 255, 0.075);
 }
@@ -283,6 +284,11 @@ input.form-control {
     max-height: 250px;
 }
 
+.view-guild-character.selected,
+.view-character.selected {
+    background-color: #ffba0082 !important;
+}
+
 /* Estilizando a barra de rolagem */
 .player-container .right-content .guild,
 .player-container .right-content .characters,
@@ -335,4 +341,26 @@ input.form-control {
 .player-container .right-content .characters::-webkit-scrollbar-corner,
 .player-container .left-content .players-list::-webkit-scrollbar-corner {
     background-color: rgba(0, 0, 0, 0.15);
+}
+
+
+.start-game-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #f0e68c;
+    padding: 20px 40px;
+    font-size: 2.5rem;
+    font-family: 'Cinzel', serif;
+    border-radius: 10px;
+    text-align: center;
+    z-index: 10000;
+    opacity: 1;
+    transition: opacity 1s ease-in-out;
+}
+
+.start-game-message.fade-out {
+    opacity: 0;
 }
