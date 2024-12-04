@@ -2,17 +2,36 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\{GuildCharacter, Player, Guild};
 use Illuminate\Http\Request;
+use App\Interfaces\{
+    GuildCharacterRepositoryInterface,
+    GuildRepositoryInterface,
+    PlayerRepositoryInterface
+};
 
 class GuildCharacterController extends Controller
 {
+    protected $guildCharacterRepository;
+    protected $guildRepository;
+    protected $playerRepository;
+
+    public function __construct(
+        GuildCharacterRepositoryInterface $guildCharacterRepository,
+        GuildRepositoryInterface $guildRepository,
+        PlayerRepositoryInterface $playerRepository,
+    )
+    {
+        $this->guildCharacterRepository = $guildCharacterRepository;
+        $this->guildRepository = $guildRepository;
+        $this->playerRepository = $playerRepository;
+    }
+
     /**
      * Lista todos os registros de GuildCharacter.
      */
     public function index()
     {
-        $guildCharacters = GuildCharacter::all();
+        $guildCharacters = $this->guildCharacterRepository->getAllGuildCharacters();
         return response()->json([
             'message' => 'Guild Characters retrieved successfully.',
             'guild_characters' => $guildCharacters
@@ -24,7 +43,7 @@ class GuildCharacterController extends Controller
      */
     public function show($id)
     {
-        $guildCharacter = GuildCharacter::find($id);
+        $guildCharacter = $this->guildCharacterRepository->getGuildCharacterById($id);
 
         if (!$guildCharacter) {
             return response()->json([
@@ -43,14 +62,12 @@ class GuildCharacterController extends Controller
      */
     public function store(Request $request)
     {
-        // Valida os dados recebidos
         $validated = $request->validate([
             'guild_id' => 'required|exists:guilds,id',
             'character_id' => 'required|exists:characters,id',
         ]);
 
-        // Cria o GuildCharacter
-        $guildCharacter = GuildCharacter::create($validated);
+        $guildCharacter = $this->guildCharacterRepository->createGuildCharacter($validated);
 
         return response()->json([
             'message' => 'Guild Character created successfully.',
@@ -63,22 +80,18 @@ class GuildCharacterController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $guildCharacter = GuildCharacter::find($id);
+        $validated = $request->validate([
+            'guild_id' => 'sometimes|required|exists:guilds,id',
+            'character_id' => 'sometimes|required|exists:characters,id',
+        ]);
+
+        $guildCharacter = $this->guildCharacterRepository->updateGuildCharacter($id, $validated);
 
         if (!$guildCharacter) {
             return response()->json([
                 'message' => 'Guild Character not found.'
             ], 404);
         }
-
-        // Valida os dados recebidos
-        $validated = $request->validate([
-            'guild_id' => 'sometimes|required|exists:guilds,id',
-            'character_id' => 'sometimes|required|exists:characters,id',
-        ]);
-
-        // Atualiza os campos do GuildCharacter
-        $guildCharacter->update($validated);
 
         return response()->json([
             'message' => 'Guild Character updated successfully.',
@@ -91,103 +104,94 @@ class GuildCharacterController extends Controller
      */
     public function destroy($id)
     {
-        $guildCharacter = GuildCharacter::find($id);
+        $success = $this->guildCharacterRepository->deleteGuildCharacter($id);
 
-        if (!$guildCharacter) {
+        if (!$success) {
             return response()->json([
                 'message' => 'Guild Character not found.'
             ], 404);
         }
-
-        // Deleta o GuildCharacter
-        $guildCharacter->delete();
 
         return response()->json([
             'message' => 'Guild Character deleted successfully.'
         ], 200);
     }
 
+    /**
+     * Busca os characters de uma guild.
+     */
     public function getByGuild($guild_id)
     {
-        $guildCharacters = GuildCharacter::where('guild_id', $guild_id)->get();
-    
+        $guildCharacters = $this->guildCharacterRepository->getGuildCharactersByGuild($guild_id);
+
         if ($guildCharacters->isEmpty()) {
             return response()->json([
                 'message' => 'No Guild Characters found for the specified Guild.'
             ], 404);
         }
-    
+
         return response()->json([
             'message' => 'Guild Characters retrieved successfully.',
             'guild_characters' => $guildCharacters
         ], 200);
     }
 
+    /**
+     * Busca os characters de um player.
+     */
     public function getCharactersByPlayer($player_id)
     {
-        $guild = Guild::where('player_id', $player_id)->first();
-    
-        if (!$guild) {
+        $characters = $this->guildCharacterRepository->getCharactersByPlayer($player_id);
+
+        if (!$characters) {
             return response()->json([
-                'message' => 'Guild not found for the specified player.'
+                'message' => 'No characters found for the specified player.'
             ], 404);
         }
-    
-        $characters = $guild->characters;
-    
+
         return response()->json([
             'message' => 'Characters retrieved successfully.',
             'characters' => $characters
         ], 200);
     }
-    
+
+    /**
+     * Adiciona um personagem a uma guild.
+     */
+    public function addCharacter($guild_id, $character_id)
+    {
+        $this->guildCharacterRepository->addCharacterToGuild($guild_id, $character_id);
+        return response()->json(['message' => 'Character added successfully.'], 200);
+    }
+
+    /**
+     * Remove um personagem de uma guild.
+     */
+    public function removeCharacter($guild_id, $character_id)
+    {
+        $this->guildCharacterRepository->removeCharacterFromGuild($guild_id, $character_id);
+        return response()->json(['message' => 'Character removed successfully.'], 200);
+    }
+
+    /**
+     * Buscar os personagens por player
+     */
     public function viewCharactersByPlayer($player_id)
     {
-        $guild = Guild::where('player_id', $player_id)->first();
-    
+        $guild = $this->guildRepository->getGuildByPlayerId($player_id);
+
         if (!$guild) {
             return response()->json([
                 'message' => 'Guild not found for the specified player.'
             ], 404);
         }
-    
-        $player = Player::find($player_id);
-        $characters = $guild->characters;
-    
+
+        $player = $this->playerRepository->getPlayerById($player_id);
+        $characters = $this->guildCharacterRepository->getCharactersByGuild($guild->id);
+
         return view('guild-characters', [
             'player' => $player,
             'characters' => $characters
         ]);
     }
-
-    public function addCharacter($guild_id, $character_id)
-    {
-        GuildCharacter::create([
-            'guild_id' => $guild_id, 
-            'character_id' => $character_id,
-        ]);
-
-        Guild::find($guild_id)->updateXp();
-
-        return response()->json(['message' => 'Character added successfully.'], 200);
-    }
-    
-
-    public function removeCharacter($guild_id, $character_id)
-    {
-        $guildCharacter = \App\Models\GuildCharacter::where('guild_id', $guild_id)
-            ->where('character_id', $character_id)
-            ->first();
-    
-        if ($guildCharacter) {
-            $guildCharacter->delete();
-            Guild::find($guild_id)->updateXp();
-
-            return response()->json(['message' => 'Character removed successfully.'], 200);
-        }
-    
-        return response()->json(['message' => 'Character not found in the guild.'], 404);
-    }
-    
-        
 }
