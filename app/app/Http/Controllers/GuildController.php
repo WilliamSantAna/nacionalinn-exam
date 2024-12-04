@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Interfaces\GuildRepositoryInterface;
 use App\Services\GuildService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use App\Models\Campaign;
 
 class GuildController extends Controller
 {
+    protected $guildRepository;
     protected $guildService;
 
-    public function __construct(GuildService $guildService)
+    public function __construct(GuildRepositoryInterface $guildRepository, GuildService $guildService)
     {
+        $this->guildRepository = $guildRepository;
         $this->guildService = $guildService;
     }
 
@@ -29,21 +31,20 @@ class GuildController extends Controller
      */
     public function store(Request $request)
     {
-        // Validação dos dados da requisição
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'player_id' => 'required|exists:players,id',  // A guild deve pertencer a um player
+            'player_id' => 'required|exists:players,id',
         ]);
 
         // Verifica se o player já tem uma guild
-        $existingGuild = Guild::where('player_id', $validated['player_id'])->first();
+        $existingGuild = $this->guildRepository->getGuildByPlayerId($validated['player_id']);
         if ($existingGuild) {
             return response()->json([
                 'message' => 'This player already has a guild.'
             ], 400);
         }
 
-        $guild = Guild::create($validated);
+        $guild = $this->guildRepository->createGuild($validated);
 
         return response()->json([
             'message' => 'Guild created successfully.',
@@ -56,21 +57,18 @@ class GuildController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Busca a guilda pelo ID
-        $guild = Guild::find($id);
+        $guild = $this->guildRepository->getGuildById($id);
 
         if (!$guild) {
             return response()->json(['message' => 'Guild not found.'], 404);
         }
 
-        // Validação dos dados da requisição
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
-            'player_id' => 'sometimes|required|exists:players,id',  // A guild deve pertencer a um player
+            'player_id' => 'sometimes|required|exists:players,id',
         ]);
 
-        // Atualiza a guilda com os dados validados
-        $guild->update($validated);
+        $guild = $this->guildRepository->updateGuild($id, $validated);
 
         return response()->json([
             'message' => 'Guild updated successfully.',
@@ -83,13 +81,11 @@ class GuildController extends Controller
      */
     public function destroy($id)
     {
-        $guild = Guild::find($id);
+        $success = $this->guildRepository->deleteGuild($id);
 
-        if (!$guild) {
+        if (!$success) {
             return response()->json(['message' => 'Guild not found.'], 404);
         }
-
-        $guild->delete();
 
         return response()->json(['message' => 'Guild deleted successfully.'], 200);
     }
@@ -99,7 +95,7 @@ class GuildController extends Controller
      */
     public function index()
     {
-        $guilds = Guild::all();
+        $guilds = $this->guildRepository->getAllGuilds();
 
         return response()->json([
             'message' => 'Guilds retrieved successfully.',
@@ -112,7 +108,7 @@ class GuildController extends Controller
      */
     public function show($id)
     {
-        $guild = Guild::find($id);
+        $guild = $this->guildRepository->getGuildById($id);
 
         if (!$guild) {
             return response()->json(['message' => 'Guild not found.'], 404);

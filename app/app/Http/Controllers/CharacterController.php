@@ -3,16 +3,22 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Character;
+use App\Interfaces\CharacterRepositoryInterface;
 
 class CharacterController extends Controller
 {
+    protected $characterRepository;
+
+    public function __construct(CharacterRepositoryInterface $characterRepository)
+    {
+        $this->characterRepository = $characterRepository;
+    }
+
     /**
      * Criar um novo personagem.
      */
     public function store(Request $request)
     {
-        // Validação dos dados da requisição
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'archetype' => 'required|in:Warrior,Mage,Archer,Cleric',
@@ -25,8 +31,7 @@ class CharacterController extends Controller
             'xp' => 'required|integer|min:1'
         ]);
 
-        // Criação do personagem
-        $character = Character::create($validated);
+        $character = $this->characterRepository->createCharacter($validated);
 
         return response()->json([
             'message' => 'Character created successfully.',
@@ -39,14 +44,6 @@ class CharacterController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Busca o personagem pelo ID
-        $character = Character::find($id);
-
-        if (!$character) {
-            return response()->json(['message' => 'Character not found.'], 404);
-        }
-
-        // Validação dos dados da requisição
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'archetype' => 'sometimes|required|in:Warrior,Mage,Archer,Cleric',
@@ -59,8 +56,11 @@ class CharacterController extends Controller
             'xp' => 'sometimes|required|integer|min:1'
         ]);
 
-        // Atualiza o personagem com os dados validados
-        $character->update($validated);
+        $character = $this->characterRepository->updateCharacter($id, $validated);
+
+        if (!$character) {
+            return response()->json(['message' => 'Character not found.'], 404);
+        }
 
         return response()->json([
             'message' => 'Character updated successfully.',
@@ -73,13 +73,11 @@ class CharacterController extends Controller
      */
     public function destroy($id)
     {
-        $character = Character::find($id);
+        $success = $this->characterRepository->deleteCharacter($id);
 
-        if (!$character) {
+        if (!$success) {
             return response()->json(['message' => 'Character not found.'], 404);
         }
-
-        $character->delete();
 
         return response()->json(['message' => 'Character deleted successfully.'], 200);
     }
@@ -89,7 +87,7 @@ class CharacterController extends Controller
      */
     public function index()
     {
-        $characters = Character::all();
+        $characters = $this->characterRepository->getAllCharacters();
 
         return response()->json([
             'message' => 'Characters retrieved successfully.',
@@ -102,7 +100,7 @@ class CharacterController extends Controller
      */
     public function show($id)
     {
-        $character = Character::find($id);
+        $character = $this->characterRepository->getCharacterById($id);
 
         if (!$character) {
             return response()->json(['message' => 'Character not found.'], 404);
@@ -119,8 +117,8 @@ class CharacterController extends Controller
      */
     public function getAvailableCharacters()
     {
-        $availableCharacters = Character::whereDoesntHave('guildCharacters')->get();
+        $availableCharacters = $this->characterRepository->getAvailableCharacters();
 
         return response()->json($availableCharacters, 200);
-    }    
+    }
 }
