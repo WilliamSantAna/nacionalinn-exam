@@ -12,7 +12,7 @@ estão livres de disputas de direitos autorais.
 
 Links da aplicação: 
 ```
-Host: https://nacionalinn.exam.everestim.com.br/
+Host: http://ec2-18-119-248-82.us-east-2.compute.amazonaws.com/
 
 Code: https://github.com/WilliamSantAna/nacionalinn-exam
 

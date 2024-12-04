@@ -3,11 +3,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\{Guild, Campaign, Character};
-use Illuminate\Support\Carbon;
+use App\Interfaces\CampaignRepositoryInterface;
 
 class CampaignController extends Controller
 {
+    protected $campaignRepository;
+
+    public function __construct(CampaignRepositoryInterface $campaignRepository)
+    {
+        $this->campaignRepository = $campaignRepository;
+    }
+
     /**
      * Retorna a view de criação de campanha
      */
@@ -21,7 +27,7 @@ class CampaignController extends Controller
      */
     public function index()
     {
-        $campaigns = Campaign::all();
+        $campaigns = $this->campaignRepository->getAllCampaigns();
         return response()->json([
             'message' => 'Campaigns retrieved successfully.',
             'campaigns' => $campaigns
@@ -33,7 +39,7 @@ class CampaignController extends Controller
      */
     public function show($id)
     {
-        $campaign = Campaign::find($id);
+        $campaign = $this->campaignRepository->getCampaignById($id);
         if (!$campaign) {
             return response()->json([
                 'message' => 'Campaign not found.'
@@ -51,16 +57,11 @@ class CampaignController extends Controller
      */
     public function store(Request $request)
     {
-        // Valida os dados da requisição
         $validated = $request->validate([
             'name' => 'required|string|max:255',
         ]);
 
-        // Cria a campanha no banco de dados
-        $campaign = Campaign::create([
-            'name' => $validated['name'],
-            'start_date' => Carbon::now()
-        ]);
+        $campaign = $this->campaignRepository->createCampaign($validated);
 
         return response()->json([
             'message' => 'Campaign created successfully.',
@@ -73,72 +74,57 @@ class CampaignController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Busca a campanha pelo ID
-        $campaign = Campaign::find($id);
-
-        // Verifica se a campanha foi encontrada
-        if (!$campaign) {
-            return response()->json([
-                'message' => 'Campaign not found.'
-            ], 404);
-        }
-
-        // Valida os dados da requisição
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'start_date' => 'sometimes|required|date',
             'end_date' => 'sometimes|date|after_or_equal:start_date',
         ]);
 
-        // Atualiza os campos com os dados validados
-        $campaign->update($validated);
+        $campaign = $this->campaignRepository->updateCampaign($id, $validated);
+
+        if (!$campaign) {
+            return response()->json([
+                'message' => 'Campaign not found.'
+            ], 404);
+        }
 
         return response()->json([
             'message' => 'Campaign updated successfully.',
             'campaign' => $campaign
         ], 200);
-    }    
+    }
 
+    /**
+     * Exibe os jogadores de uma campanha
+     */
     public function viewPlayersOfCampaign($campaign_id)
     {
-        $campaign = Campaign::find($campaign_id);
-    
-        if (!$campaign) {
+        $players = $this->campaignRepository->getPlayersByCampaign($campaign_id);
+        if (!$players) {
             return response()->json([
                 'message' => 'Campaign not found for the specified id.'
             ], 404);
         }
-    
-        $players = $campaign->players;
-    
+
         return view('players-campaign', [
-            'campaign' => $campaign,
+            'campaign' => $this->campaignRepository->getCampaignById($campaign_id),
             'players' => $players
         ]);
     }
 
+    /**
+     * Exibe os personagens disponíveis de uma campanha
+     */
     public function viewCharactersAvailableOfCampaign($campaign_id)
     {
-        $campaign = Campaign::find($campaign_id);
+        $availableCharacters = $this->campaignRepository->getAvailableCharacters($campaign_id);
 
-        // Obtem os IDs dos players da campanha específica
-        $playerIds = $campaign->players()->pluck('id')->toArray();
+        if ($availableCharacters === null) {
+            return response()->json([
+                'message' => 'Campaign not found for the specified id.'
+            ], 404);
+        }
 
-        // Obtem os IDs das guilds associadas aos players da campanha
-        $guildIds = Guild::whereIn('player_id', $playerIds)->pluck('id')->toArray();
-
-        // Busca os characters que não estão atrelados a essas guilds
-        $availableCharacters = Character::when(empty($guildIds), function ($query) {
-            // Se o array $guildIds estiver vazio, não aplica o filtro e retorna todos os personagens
-            return $query;
-        }, function ($query) use ($guildIds) {
-            // Caso contrário, aplica o filtro baseado no $guildIds
-            return $query->whereDoesntHave('guildCharacters', function ($query) use ($guildIds) {
-                $query->whereIn('guild_id', $guildIds);
-            });
-        })->get();
-
-        return view('characters', ['characters' => $availableCharacters]);        
+        return view('characters', ['characters' => $availableCharacters]);
     }
-
 }

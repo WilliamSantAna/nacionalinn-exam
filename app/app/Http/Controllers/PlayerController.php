@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Player;
-use App\Models\Campaign;
-use App\Models\Guild;
-use App\Models\Character;
+use App\Models\{Player, Campaign, Guild, Character};
+use App\Interfaces\PlayerRepositoryInterface;
 use Illuminate\Http\Request;
 
 class PlayerController extends Controller
 {
+    protected $playerRepository;
+
+    public function __construct(PlayerRepositoryInterface $playerRepository)
+    {
+        $this->playerRepository = $playerRepository;
+    }
+
     /**
      * Retorna a view de criação de jogador.
      */
@@ -31,14 +36,14 @@ class PlayerController extends Controller
             'characters' => $characters,
         ]);
     }
-    
+
     /**
      * Lista todos os Players de uma Campaign.
      */
     public function index(Request $request)
     {
         $campaign_id = $request->query('campaign_id');
-        $players = Player::where('campaign_id', $campaign_id)->get();
+        $players = $this->playerRepository->getAllPlayersByCampaignId($campaign_id);
 
         return response()->json([
             'message' => 'Players retrieved successfully.',
@@ -51,7 +56,7 @@ class PlayerController extends Controller
      */
     public function show($id)
     {
-        $player = Player::find($id);
+        $player = $this->playerRepository->getPlayerById($id);
 
         if (!$player) {
             return response()->json([
@@ -75,7 +80,7 @@ class PlayerController extends Controller
             'campaign_id' => 'required|exists:campaigns,id'
         ]);
 
-        $player = Player::create([
+        $player = $this->playerRepository->createPlayer([
             'name' => $validated['name'],
             'campaign_id' => $validated['campaign_id'],
             'confirmed' => false,
@@ -99,8 +104,7 @@ class PlayerController extends Controller
      */
     public function update(Request $request, $id)
     {
-        // Busca o jogador pelo ID
-        $player = Player::find($id);
+        $player = $this->playerRepository->getPlayerById($id);
 
         if (!$player) {
             return response()->json([
@@ -108,15 +112,13 @@ class PlayerController extends Controller
             ], 404);
         }
 
-        // Validação dos dados da requisição
         $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'campaign_id' => 'sometimes|required|exists:campaigns,id',
             'confirmed' => 'sometimes|required|boolean'
         ]);
 
-        // Atualiza o jogador
-        $player->update($validated);
+        $player = $this->playerRepository->updatePlayer($id, $validated);
 
         return response()->json([
             'message' => 'Player updated successfully.',
@@ -129,17 +131,13 @@ class PlayerController extends Controller
      */
     public function destroy($id)
     {
-        // Busca o jogador pelo ID
-        $player = Player::find($id);
+        $success = $this->playerRepository->deletePlayer($id);
 
-        if (!$player) {
+        if (!$success) {
             return response()->json([
                 'message' => 'Player not found.'
             ], 404);
         }
-
-        // Deleta o jogador
-        $player->delete();
 
         return response()->json([
             'message' => 'Player deleted successfully.'
@@ -148,15 +146,11 @@ class PlayerController extends Controller
 
     public function toggleConfirmation($id)
     {
-        $player = Player::find($id);
+        $player = $this->playerRepository->toggleConfirmation($id);
 
         if (!$player) {
             return response()->json(['message' => 'Player not found.'], 404);
         }
-
-        // Alterna o status de confirmação
-        $player->confirmed = !$player->confirmed;
-        $player->save();
 
         return response()->json(['message' => 'Player confirmation updated.', 'confirmed' => $player->confirmed], 200);
     }    
