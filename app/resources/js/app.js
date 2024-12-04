@@ -136,8 +136,8 @@ const balanceTeams = (event) => {
     const confirmedPlayers = document.querySelectorAll('.players-campaign input[type="checkbox"]:checked');
 
     if (confirmedPlayers.length < 2) {
-        //alert('It is necessary to have at least 2 confirmed players to distribute the guilds.');
-        //return; // Interrompe a execução se não houver players suficientes
+        alert('It is necessary to have at least 2 confirmed players to distribute the guilds.');
+        return; // Interrompe a execução se não houver players suficientes
     }
 
     fetch(`/distribute-guilds/${window.activeCampaign}`)
