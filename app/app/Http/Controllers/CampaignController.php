@@ -128,8 +128,14 @@ class CampaignController extends Controller
         $guildIds = Guild::whereIn('player_id', $playerIds)->pluck('id')->toArray();
 
         // Busca os characters que não estão atrelados a essas guilds
-        $availableCharacters = Character::whereDoesntHave('guildCharacters', function ($query) use ($guildIds) {
-            $query->whereIn('guild_id', $guildIds);
+        $availableCharacters = Character::when(empty($guildIds), function ($query) {
+            // Se o array $guildIds estiver vazio, não aplica o filtro e retorna todos os personagens
+            return $query;
+        }, function ($query) use ($guildIds) {
+            // Caso contrário, aplica o filtro baseado no $guildIds
+            return $query->whereDoesntHave('guildCharacters', function ($query) use ($guildIds) {
+                $query->whereIn('guild_id', $guildIds);
+            });
         })->get();
 
         return view('characters', ['characters' => $availableCharacters]);        
